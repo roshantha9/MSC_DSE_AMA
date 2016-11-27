@@ -1,0 +1,32 @@
+% =======================================================================
+% Advanced Multimedia Applications
+% Name : Test_2DDCT_Speed.m
+% Description : Test Script for 2D_DCT - to measure speed between the row
+% and column wise 2D-DCT and the 2D-DCT using basic transform equations.
+% =======================================================================
+
+clc;clear;close all;
+
+%=====================================================================
+%       T E S T  -  S C R I P T   P A R A M E T E R S
+%=====================================================================
+
+datasize = 8; % initially fixed;
+speed = 0;    %(using simple, 1D-DCT equation on rows and colums)
+
+
+%=====================================================================
+%       T E S T  -  M A I N   L O O P
+%=====================================================================
+
+for datasize=8:8:64 
+
+
+    % the data - a random matrix
+data = round(-128 + (128+128).*rand(datasize,datasize))'
+
+dct2_s  = dct_2_simple(data)
+
+dct2_rc = dct_2_8x8(data,datasize,speed)'
+
+end

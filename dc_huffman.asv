@@ -1,0 +1,28 @@
+function [blockDCbit_seq,blockbit_len]=dc_huffman(dc_seq)
+    blockDCbit_seq=[];
+    blockbit_seq=[];    
+    e = dc_seq;
+    len = length(dc_seq);
+    for i =1:len;
+     amplitude=dc_category(e(i)); % get category
+     bit_seq=tableDC(amplitude);  % get basecode
+    
+         %amplitude
+         %e(i)
+         
+         % get symbol-2, if amplitude is not 0, else just encode '00'
+         if(amplitude == 0)
+             blockDCbit_seq=[blockDCbit_seq,bit_seq];
+             blockbit_len=length(blockDCbit_seq);
+         else     
+            symbol_2 = amp_to_sym2(e(i),amplitude);    
+            blockDCbit_seq=[blockDCbit_seq,bit_seq,symbol_2];
+            blockbit_len=length(blockDCbit_seq);
+         end
+         
+         
+         
+    end
+    
+    %blockDCbit_seq is the sequence for the DC part
+    %blockbit_len is the length

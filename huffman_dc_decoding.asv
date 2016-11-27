@@ -1,0 +1,36 @@
+%% this function is to do the Inverse huffman coding for dc part
+%% the input should be the whole sequence including the output of DC,
+%% the idea is to match the sequence with the code in
+%% decode table, get the category of the value then cut the relative number, 
+%% change them into decimal
+
+function [dc_dehuff]=huffman_dc_decoding(blockbit_seq)
+dc_dehuff=[];point=1;
+len=length(blockbit_seq);
+for i = point:len
+    temp_dc = blockbit_seq(point:i);
+    category_dc = detableDC(temp_dc);
+    if category_dc >= 0 && category_dc <= 11;%get correct output, while doing the loop the category_dc
+          category_dc;                                   %would be 12
+        r_dc = blockbit_seq(i+1:i+category_dc);
+%         if r_dc(1)=='0';   %% if it's a negative number
+%             for j=1:length(r_dc)
+%                  if r_dc(j)=='0';
+%                      r_dc(j)='1';
+%                     else r_dc(j)='0';
+%                  end
+%                 end
+%                r_new=-bin2dec(r_dc);
+%            else r_new=bin2dec(r_dc);
+%         end  
+
+        r_new = sym
+        dc_dehuff=[dc_dehuff,r_new];
+    
+    point = i + category_dc+1;
+    i = point;
+    end
+end   %finish DC part
+%dc_dehuff
+
+            

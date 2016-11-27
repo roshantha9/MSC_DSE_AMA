@@ -1,0 +1,74 @@
+% Quantiser Test app
+% ------------------------------
+clc;clear
+
+%=====================================================================
+%       TEST - SCRIPT PARAMETERS
+%=====================================================================
+
+img = imread('lena512.bmp');
+imshow(img);
+
+%img = imread('photocopy.bmp');
+%imshow(img);
+
+img = double(img)-128;
+[m,n] = size(img);
+b = 8;
+speed  = 1;     % 0-simple dct, 1-fast dct
+q_type = 'NL';  % NL = Non-Linear, L=Linear 
+
+%=====================================================================
+%       E N C O D E R
+%=====================================================================
+
+% split the input larger matrix into smaller 8x8 blocks
+split_img = mat2cell(img, b*ones(m/b,1), b*ones(1,n/b));
+
+% perform DCT->Quantisation->Inverse-Quantisation->IDCT for each block
+for i = 1:length(split_img)
+    for j = 1:length(split_img)
+
+        % --------------- 2D-DCT ---------------------------------------------
+        % perform DCT - Encoder side
+        enc_dct_block = dct_2_8x8(split_img{i,j},b,speed);      % output is a array of cells
+
+
+        % --------------- Quantisation ---------------------------------------
+        if (q_type == 'NL')
+            enc_q_block =  NL_Quantizer(enc_dct_block,50,0);        
+        elseif(q_type == 'L')
+            enc_q_block =  L_Quantizer(enc_dct_block,0);    
+        else
+            error('unknown q_type');
+        end
+
+
+    %=====================================================================
+    %       D E C O D E R
+    %=====================================================================
+
+        % --------------- Inverse - Quantisation------------------------------
+        if (q_type == 'NL')
+            dec_q_block =  NL_Quantizer(enc_q_block,50,1);         
+        elseif(q_type == 'L')
+            dec_q_block = L_Quantizer(enc_q_block{j},0);    
+        else
+            error('unknown q_type');
+        end
+
+    % --------------- 2D - Inverse - DCT ---------------------------------
+
+        dec_idct_block = idct_2_8x8(dec_q_block{j},b, speed);    
+        reconstructed_cell{i,j} = dec_idct_block;
+
+    end
+end
+reconstructed_img = cell2mat(reconstructed_cell);     % output is a matrix
+
+% add back the 128, and convert to uint8
+reconstructed_img = reconstructed_img + 128;
+reconstructed_img = uint8(reconstructed_img);
+
+% display picture
+figure;imshow(reconstructed_img);
